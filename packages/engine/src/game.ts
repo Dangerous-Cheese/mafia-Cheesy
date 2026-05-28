@@ -11,10 +11,9 @@ import {
 	instantiateRole,
 	type RoleName,
 } from './roles';
-import { type Actor } from './roles/actor';
+import { type Actor, type ActorState } from './roles/actor';
 import {
 	EngineInputSchema,
-	type ActorState,
 	type EngineInput,
 	type EngineResult,
 	type GameConfig,

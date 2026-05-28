@@ -1,19 +1,23 @@
 import { z } from 'zod';
 import { MAX_ACTORS } from '../constants';
 
-
-// Registry (this is where we will determine priority order for role selection, so order matters here)
-export const RoleRegistry = [
+// The order here matters, this is the order that actions will be resolved in (e.g. citizen will vest before mafia shoots, doctor will heal after mafia shoots, etc.)
+export const RoleNamesAndPriorityOrder = [
+	// Town Roles
 	'Citizen',
 	'Bodyguard',
 	'Doctor',
+
+	// Mafia Roles
 	'Godfather',
 	'Mafioso',
+
+	// Neutral Roles
 	'Survivor',
 ] as const;
-export type RoleName = (typeof RoleRegistry)[number];
+export type RoleName = (typeof RoleNamesAndPriorityOrder)[number];
 
-export const RoleNameSchema = z.enum(RoleRegistry);
+export const RoleNameSchema = z.enum(RoleNamesAndPriorityOrder);
 
 // Alignment
 export const RoleAlignment = ['Town', 'Mafia', 'Neutral'] as const;
