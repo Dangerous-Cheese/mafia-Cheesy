@@ -10,7 +10,7 @@ export const RoleRegistry = [
 	'Godfather',
 	'Mafioso',
 	'Survivor',
-]
+] as const;
 export type RoleName = (typeof RoleRegistry)[number];
 
 export const RoleNameSchema = z.enum(RoleRegistry);
@@ -67,3 +67,12 @@ export const RoleAllySchema = z.object({
 });
 
 export type RoleAlly = z.infer<typeof RoleAllySchema>;
+
+// Role settings
+export const RoleSettingsSchema = z.object({
+	max: z.number().int().min(0),
+	weight: z.number().min(0),
+	settings: z.record(z.string(), z.unknown()).default({}),
+});
+
+export type RoleSettings = z.infer<typeof RoleSettingsSchema>;
