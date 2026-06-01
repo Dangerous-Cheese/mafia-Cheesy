@@ -2,7 +2,8 @@ import { z } from 'zod';
 import { MAX_ACTORS } from './constants';
 import type { GameEventGroupDump } from './events';
 import { ActorStateSchema, type ActorState } from './roles/actor';
-import { RoleAlignmentSchema, RoleNameSchema, RoleSettingsSchema, RoleTagSchema } from './roles/role';
+import { RoleAlignmentSchema, RoleNameSchema, RoleSettingsSchema } from './roles/role';
+import { RoleTagSchema } from './roles';
 
 // ---------------------------------------------------------------------------
 // Game config

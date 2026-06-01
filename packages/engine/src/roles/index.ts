@@ -1,10 +1,11 @@
+import { z } from 'zod';
 import type { ActorContext, ActorState } from './actor';
 import { Bodyguard } from './bodyguard';
 import { Citizen } from './citizen';
 import { Doctor } from './doctor';
 import { Godfather } from './godfather';
 import { Mafioso } from './mafioso';
-import type { RoleName, RoleSettings, RoleTag } from './role';
+import { RolePoolTagSchema, type RoleName, type RoleSettings, type RoleTag } from './role';
 import { Survivor } from './survivor';
 
 export {
@@ -12,9 +13,10 @@ export {
 	RoleAlignmentSchema,
 	RoleNamesAndPriorityOrder,
 	RoleNameSchema,
+	RolePoolTagSchema,
 	RoleSettingsSchema,
 	RoleTags,
-	RoleTagSchema,
+	ROLE_TAGS,
 	type RoleName,
 	type RoleSettings,
 	type RoleTag
@@ -39,6 +41,32 @@ export const RoleRegistry = [
 export type RoleClass = (typeof RoleRegistry)[number];
 
 export type RoleInstance = InstanceType<RoleClass>;
+
+// A role key is the canonical identifier declared on each role class (e.g.
+// "citizen", "serial_killer"). Derived from the registry, not from role names.
+export type RoleKey = RoleClass['roleKey'];
+
+const asNonEmptyTuple = <T extends string>(values: T[]) => values as [T, ...T[]];
+
+// Every role's declared key, e.g. ["citizen", "bodyguard", ...].
+export const ROLE_KEYS = RoleRegistry.map((RoleClass) => RoleClass.roleKey);
+
+// role name -> role key lookup (canonical, from class metadata).
+export const ROLE_KEY_BY_NAME = RoleRegistry.reduce(
+	(acc, RoleClass) => {
+		acc[RoleClass.roleName] = RoleClass.roleKey;
+		return acc;
+	},
+	{} as Record<RoleName, RoleKey>,
+);
+
+export const RoleKeySchema = z.enum(asNonEmptyTuple(ROLE_KEYS));
+
+// A tag is either a pool tag (e.g. "town_random") or a role key (e.g. "citizen").
+export const RoleTagSchema = z.union([RolePoolTagSchema, RoleKeySchema]);
+
+// Widened tag type usable in game config: pool tag or direct role key.
+export type RoleSelectionTag = RoleTag | RoleKey;
 
 type DynamicRoleConstructor = new (
 	input: ActorState,

@@ -6,6 +6,7 @@ import type { EngineLogger } from './logger';
 import {
 	FALLBACK_ROLE,
 	instantiateRole,
+	ROLE_KEY_BY_NAME,
 	ROLE_TAGS_MAP,
 	RoleNamesAndPriorityOrder,
 	type RoleName,
@@ -62,8 +63,9 @@ const generateRoles = (
 		>) {
 			if (!settings) continue;
 			const roleTags = ROLE_TAGS_MAP[roleName] ?? [];
-			if (roleTags.includes(tag)) {
-				console.log(`Adding role option for tag ${tag}: ${roleName} (weight ${settings.weight}, max ${settings.max})`);
+			// A tag matches a role if it's one of the role's pool tags OR the
+			// role's canonical key (e.g. "citizen", "serial_killer").
+			if ((roleTags as readonly string[]).includes(tag) || ROLE_KEY_BY_NAME[roleName] === tag) {
 				possibleRoles.push([roleName, settings.weight, settings.max]);
 			}
 		}

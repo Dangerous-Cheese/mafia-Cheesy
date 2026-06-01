@@ -54,13 +54,16 @@ export const RoleTags = {
 
 export type RoleTag = (typeof RoleTags)[keyof typeof RoleTags];
 
-export type RoleKey = Lowercase<string>;
-
 // export type RoleTag = RolePoolTag | RoleIdentityTag;
 
 export const ROLE_TAGS = Object.values(RoleTags) as RoleTag[];
 
-export const RoleTagSchema = z.enum(ROLE_TAGS);
+const asNonEmptyTuple = <T extends string>(values: T[]) => values as [T, ...T[]];
+
+// Pool tags only (e.g. "town_random"). Role-key tags and the combined
+// RoleTagSchema live in ./index, where the role registry (the canonical source
+// of role keys) is available without a circular import.
+export const RolePoolTagSchema = z.enum(asNonEmptyTuple(ROLE_TAGS));
 
 // Allies
 export const RoleAllySchema = z.object({
