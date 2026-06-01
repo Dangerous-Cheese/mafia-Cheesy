@@ -48,7 +48,9 @@ export class Actor {
 	static roleName: RoleName = 'Citizen';
 	static roleKey = 'citizen';
 
-	static description = 'Town protective role that can heal one target each night.';
+	static description: string = '';
+	static abilities: string[] = [];
+	static goal: string = '';
 
 	static canTriggerGameOver = true;
 
@@ -250,6 +252,8 @@ export class Town extends Actor {
 		...super.tags,
 		RoleTags.TownRandom
 	] as const;
+
+	static override goal = 'Lynch every criminal and evildoer.'
 
 	constructor(input: ActorState, context: ActorContext) {
 		super(input, context);

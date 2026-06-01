@@ -122,6 +122,8 @@ export const ROLE_INFO = RoleRegistry.reduce(
 			name: RoleClass.roleName,
 			tags: RoleClass.tags,
 			description: RoleClass.description,
+			abilities: RoleClass.abilities,
+			goal: RoleClass.goal,
 		};
 		return acc;
 	},
@@ -129,5 +131,7 @@ export const ROLE_INFO = RoleRegistry.reduce(
 		name: RoleName;
 		tags: readonly RoleTag[];
 		description: string;
+		abilities: string[];
+		goal: string;
 	}>
 );

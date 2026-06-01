@@ -21,6 +21,9 @@ export class Bodyguard extends Town {
 
 	static settingsSchema = BodyguardSettingsSchema;
 	static override description = 'Town protector that intercepts attacks at target home.';
+	static override abilities = [
+		'Each night, choose a player to protect. If that player is attacked, you will die instead and take the attacker down with you.',
+	]
 
 	private guarding?: Actor;
 

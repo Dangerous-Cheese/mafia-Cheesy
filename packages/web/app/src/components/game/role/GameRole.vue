@@ -17,6 +17,19 @@
 						:label="tag"
 					/>
 				</div>
+				<div class="row q-gutter-xs">
+					<QChip
+						v-for="ability in meta.abilities"
+						:key="ability"
+						dense
+						color="grey-8"
+						text-color="white"
+						:label="ability"
+					/>
+				</div>
+				<div>
+					{{ meta.goal }}
+				</div>
 				<div v-if="hasSettings" class="q-gutter-y-xs">
 					<div class="text-caption text-grey-5">Settings</div>
 					<div v-for="(value, key) in settings" :key="key" class="text-body2">
