@@ -4,7 +4,7 @@ import { Citizen } from './citizen';
 import { Doctor } from './doctor';
 import { Godfather } from './godfather';
 import { Mafioso } from './mafioso';
-import type { RoleName, RoleSettings } from './role';
+import type { RoleName, RoleSettings, RoleTag } from './role';
 import { Survivor } from './survivor';
 
 export {
@@ -74,3 +74,10 @@ export const instantiateRole = (
 
 	return new RoleClass(input, settings, context);
 };
+
+// Helper constants for use by consumers
+
+// Fallback role to use when a role cannot be instantiated for some reason (e.g. invalid role name)
+export const FALLBACK_ROLE: RoleName = 'Citizen';
+
+export const ROLE_TAGS_MAP: Record<RoleName, RoleTag[]> = RoleRegistry.map(roleClass => [roleClass.roleName, roleClass.tags]) as unknown as Record<RoleName, RoleTag[]>;

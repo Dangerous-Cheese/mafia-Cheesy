@@ -39,21 +39,10 @@ export { EngineLogger } from './logger';
 // Roles
 // ---------------------------------------------------------------------------
 export {
-	FALLBACK_ROLE, importRole,
-	importRoleDefinition,
-	instantiateRole,
-	isRoleName,
-	ROLE_CATALOG,
-	ROLE_DESCRIPTIONS,
-	ROLE_LIST,
-	ROLE_NAMES,
-	ROLE_PRIORITY,
-	ROLE_REGISTRY, ROLE_TAGS, ROLE_TAGS_MAP
+	FALLBACK_ROLE,
+	instantiateRole
 } from './roles';
 export type {
-	RoleCatalog,
-	RoleConstructor,
-	RoleDefinition,
 	RoleName, RoleTag
 } from './roles';
 
@@ -86,29 +75,19 @@ export type { Rng } from './utils';
 // Schemas & types
 // ---------------------------------------------------------------------------
 export {
-	ActorAlignmentSchema,
-	ActorStateInputSchema,
-	ActorStateSchema,
-	AllySchema,
 	EngineInputSchema,
 	EngineOptionsSchema,
 	GameConfigSchema,
-	GameStateSchema, RoleNameSchema,
-	RoleSettingsSchema, RoleTagSchema, StateActorSchema,
+	GameStateSchema, StateActorSchema,
 	StateGraveyardRecordSchema,
 	WinnerSummarySchema
 } from './types';
 export type {
-	ActorAlignment,
-	ActorState,
-	ActorStateInput,
-	Ally,
 	EngineInput,
 	EngineOptions,
 	EngineResult,
 	GameConfig,
 	GameState,
-	RoleSettings,
 	StateActor,
 	StateGraveyardRecord,
 	WinnerSummary

@@ -6,9 +6,11 @@ import { GameEventGroup } from './events';
 import { EngineLogger } from './logger';
 import {
 	FALLBACK_ROLE,
-	ROLE_PRIORITY,
-	ROLE_TAGS_MAP,
+	// ROLE_PRIORITY,
+	// ROLE_TAGS_MAP,
 	instantiateRole,
+	ROLE_TAGS_MAP,
+	RoleNamesAndPriorityOrder,
 	type RoleName,
 } from './roles';
 import { type Actor, type ActorState } from './roles/actor';
@@ -63,6 +65,7 @@ const generateRoles = (
 			[RoleName, GameConfig['roles'][RoleName] & {}]
 		>) {
 			if (!settings) continue;
+			console.log('Checking role', roleName, 'with settings', settings, 'for tag', tag);
 			const roleTags = ROLE_TAGS_MAP[roleName] ?? [];
 			if (roleTags.includes(tag)) {
 				possibleRoles.push([roleName, settings.weight, settings.max]);
@@ -245,8 +248,8 @@ class Game {
 		this.generateAlliesAndPossibleTargets();
 		this.actors = [...this.actors].sort(
 			(a, b) =>
-				(ROLE_PRIORITY[a.roleName] ?? Number.POSITIVE_INFINITY) -
-				(ROLE_PRIORITY[b.roleName] ?? Number.POSITIVE_INFINITY),
+				(RoleNamesAndPriorityOrder.indexOf(a.roleName) ?? Number.POSITIVE_INFINITY) -
+				(RoleNamesAndPriorityOrder.indexOf(b.roleName) ?? Number.POSITIVE_INFINITY),
 		);
 
 		for (const actor of this.actors) {
