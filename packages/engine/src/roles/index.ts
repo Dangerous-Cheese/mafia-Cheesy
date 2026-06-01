@@ -9,15 +9,13 @@ import { RolePoolTagSchema, type RoleName, type RoleSettings, type RoleTag } fro
 import { Survivor } from './survivor';
 
 export {
-	RoleAlignment,
+	ROLE_TAGS, RoleAlignment,
 	RoleAlignmentSchema,
 	RoleNamesAndPriorityOrder,
 	RoleNameSchema,
 	RolePoolTagSchema,
 	RoleSettingsSchema,
-	RoleTags,
-	ROLE_TAGS,
-	type RoleName,
+	RoleTags, type RoleName,
 	type RoleSettings,
 	type RoleTag
 } from './role';
@@ -115,4 +113,21 @@ export const ROLE_TAGS_MAP = RoleRegistry.reduce(
 		return acc;
 	},
 	{} as Record<RoleName, readonly RoleTag[]>
+);
+
+// Role Info
+export const ROLE_INFO = RoleRegistry.reduce(
+	(acc, RoleClass) => {
+		acc[RoleClass.roleName] = {
+			name: RoleClass.roleName,
+			tags: RoleClass.tags,
+			description: RoleClass.description,
+		};
+		return acc;
+	},
+	{} as Record<RoleName, {
+		name: RoleName;
+		tags: readonly RoleTag[];
+		description: string;
+	}>
 );

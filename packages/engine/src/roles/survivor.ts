@@ -29,9 +29,8 @@ export class Survivor extends Neutral {
 	static override roleName = 'Survivor' as const;
 	static override roleKey = 'survivor' as const;
 
-	static override priority = 0;
 	static settingsSchema = SurvivorSettingsSchema;
-	static description = 'Neutral Benign role that wins by surviving to the end of the game.';
+	static override description = 'Neutral Benign role that wins by surviving to the end of the game.';
 
 	private remainingVests = 0;
 

@@ -1,6 +1,10 @@
 <template>
 	<MCard>
-		<MCardHeader :title="meta?.name ?? 'Unknown Role'" :subtitle="meta?.description" :separated="false" />
+		<MCardHeader
+			:title="meta?.name ?? 'Unknown Role'"
+			:subtitle="meta?.description"
+			:separated="false"
+		/>
 		<MCardContent>
 			<div v-if="meta" class="q-gutter-y-sm">
 				<div class="row q-gutter-xs">
@@ -25,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { ROLE_META, type RoleName, type RoleSettings } from '@mafia/sdk';
+import { ROLE_INFO, type RoleName, type RoleSettings } from '@mafia/sdk';
 import { QChip } from 'quasar';
 import { MCard, MCardContent, MCardHeader } from 'src/components/ui/Card';
 import { computed } from 'vue';
@@ -40,6 +44,6 @@ const props = withDefaults(
 	},
 );
 
-const meta = computed(() => ROLE_META[props.roleName]);
+const meta = computed(() => ROLE_INFO[props.roleName]);
 const hasSettings = computed(() => Object.keys(props.settings ?? {}).length > 0);
 </script>

@@ -15,9 +15,8 @@ export class Mafioso extends Mafia {
 	static override roleName = 'Mafioso' as const;
 	static override roleKey = 'mafioso' as const;
 
-	static override priority = 4;
 	static settingsSchema = MafiosoSettingsSchema;
-	static description = 'Mafia attacker that carries out faction kills.';
+	static override description = 'Mafia attacker that carries out faction kills.';
 
 	constructor(
 		input: ActorState,

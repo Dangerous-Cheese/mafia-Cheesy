@@ -47,11 +47,8 @@ export class Actor {
 	 */
 	static roleName: RoleName = 'Citizen';
 	static roleKey = 'citizen';
-	/**
-	 * Action-resolution priority. Lower runs first. Subclasses override.
-	 * Used to derive the {@link ROLE_PRIORITY} table.
-	 */
-	static priority = 0;
+
+	static description = 'Town protective role that can heal one target each night.';
 
 	static canTriggerGameOver = true;
 
@@ -91,6 +88,10 @@ export class Actor {
 
 	get tags(): readonly RoleTag[] {
 		return [...(this.constructor as typeof Actor).tags];
+	}
+
+	get description(): string {
+		return (this.constructor as typeof Actor).description;
 	}
 
 	get canTriggerGameOver(): boolean {

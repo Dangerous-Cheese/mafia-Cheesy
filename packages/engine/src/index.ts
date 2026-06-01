@@ -166,12 +166,10 @@ export { EngineLogger } from './logger';
 // Roles
 // ---------------------------------------------------------------------------
 export {
-	FALLBACK_ROLE,
-	instantiateRole
+	FALLBACK_ROLE, instantiateRole, ROLE_INFO, RoleAlignmentSchema, RoleKeySchema, RoleNamesAndPriorityOrder, RoleTagSchema
 } from './roles';
-export type {
-	RoleName, RoleTag
-} from './roles';
+export type { RoleAlignment, RoleName, RoleSettings, RoleTag } from './roles';
+
 
 export { Actor, Mafia, Town } from './roles/actor';
 export { Bodyguard, BodyguardSettingsSchema } from './roles/bodyguard';
@@ -219,4 +217,9 @@ export type {
 	StateGraveyardRecord,
 	WinnerSummary
 } from './types';
+
+export { ActorStateSchema } from './roles/actor';
+export type { ActorState } from './roles/actor';
+
+
 

@@ -21,9 +21,8 @@ export class Godfather extends Mafia {
 	static override roleName = 'Godfather' as const;
 	static override roleKey = 'godfather' as const;
 
-	static override priority = 3;
 	static settingsSchema = GodfatherSettingsSchema;
-	static description = 'Mafia leader who can delegate kills and starts night-immune.';
+	static override description = 'Mafia leader who can delegate kills and starts night-immune.';
 
 	constructor(
 		input: ActorState,

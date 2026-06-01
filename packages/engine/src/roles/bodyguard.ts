@@ -19,9 +19,8 @@ export class Bodyguard extends Town {
 	static override roleName = 'Bodyguard' as const;
 	static override roleKey = 'bodyguard' as const;
 
-	static override priority = 2;
 	static settingsSchema = BodyguardSettingsSchema;
-	static description = 'Town protector that intercepts attacks at target home.';
+	static override description = 'Town protector that intercepts attacks at target home.';
 
 	private guarding?: Actor;
 

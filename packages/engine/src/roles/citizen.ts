@@ -19,9 +19,8 @@ export class Citizen extends Town {
 	static override roleName = 'Citizen' as const;
 	static override roleKey = 'citizen' as const;
 
-	static override priority = 0;
 	static settingsSchema = CitizenSettingsSchema;
-	static description = 'Town role with limited self-protection vests.';
+	static override description = 'Town role with limited self-protection vests.';
 
 	private remainingVests = 0;
 

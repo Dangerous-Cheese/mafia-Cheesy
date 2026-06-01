@@ -18,9 +18,8 @@ export class Doctor extends Town {
 	static override roleName = 'Doctor' as const;
 	static override roleKey = 'doctor' as const;
 
-	static override priority = 1;
 	static settingsSchema = DoctorSettingsSchema;
-	static description = 'Town protective role that can heal one target each night.';
+	static override description = 'Town protective role that can heal one target each night.';
 
 	constructor(
 		input: ActorState,
