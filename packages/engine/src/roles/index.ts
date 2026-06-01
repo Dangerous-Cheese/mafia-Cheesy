@@ -80,4 +80,11 @@ export const instantiateRole = (
 // Fallback role to use when a role cannot be instantiated for some reason (e.g. invalid role name)
 export const FALLBACK_ROLE: RoleName = 'Citizen';
 
-export const ROLE_TAGS_MAP: Record<RoleName, RoleTag[]> = RoleRegistry.map(roleClass => [roleClass.roleName, roleClass.tags]) as unknown as Record<RoleName, RoleTag[]>;
+// Map each role name to its static tag list.
+export const ROLE_TAGS_MAP = RoleRegistry.reduce(
+	(acc, RoleClass) => {
+		acc[RoleClass.roleName] = RoleClass.tags;
+		return acc;
+	},
+	{} as Record<RoleName, readonly RoleTag[]>
+);

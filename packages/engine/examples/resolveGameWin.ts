@@ -1,5 +1,6 @@
-import { resolveGame, type GameConfig, type ActorState } from '@mafia/engine';
+import { resolveGame, type GameConfig } from '@mafia/engine';
 import { DEFAULT_SEED } from '@mafia/engine/testing';
+import type { ActorState } from '../src/roles';
 
 const actors: ActorState[] = [
 	{
