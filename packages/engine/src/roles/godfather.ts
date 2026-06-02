@@ -1,12 +1,13 @@
 import { z } from 'zod';
-import { DEFAULT_NIGHT_IMMUNE, EventIds } from '../constants';
+import { EventIds } from '../constants';
 import { GameEvent, GameEventGroup } from '../events';
-import { Mafia, type ActorContext, type Actor, type ActorState } from './actor';
+import { Mafia, type Actor, type ActorContext, type ActorState } from './actor';
+import { nightImmuneAttribute } from './attributes';
 import { Mafioso } from './mafioso';
 import { RoleTags } from './role';
 
 export const GodfatherSettingsSchema = z.object({
-	nightImmune: z.number().int().min(0).default(DEFAULT_NIGHT_IMMUNE),
+	nightImmune: z.boolean().default(true),
 });
 
 export type GodfatherSettings = z.infer<typeof GodfatherSettingsSchema>;
@@ -24,6 +25,11 @@ export class Godfather extends Mafia {
 	static settingsSchema = GodfatherSettingsSchema;
 	static override description = 'Mafia leader who can delegate kills and starts night-immune.';
 
+	static override attributes(settings: GodfatherSettingsInput = {}): string[] {
+		const parsed = GodfatherSettingsSchema.parse(settings);
+		return nightImmuneAttribute(parsed.nightImmune);
+	}
+
 	constructor(
 		input: ActorState,
 		settings: GodfatherSettingsInput = {},
@@ -31,7 +37,7 @@ export class Godfather extends Mafia {
 	) {
 		super(input, context);
 		const parsed = GodfatherSettingsSchema.parse(settings);
-		this.nightImmune = parsed.nightImmune > 0;
+		this.nightImmune = parsed.nightImmune;
 	}
 
 	override findPossibleTargets(actors: Actor[] = []) {

@@ -46,8 +46,7 @@ export type {
 export {
 	ActorStateSchema,
 	FALLBACK_ROLE, GameConfigSchema,
-	GameStateSchema,
-	ROLE_INFO, RoleAlignmentSchema, RoleTagSchema
+	GameStateSchema, getRoleAttributes, ROLE_ALIGNMENT_MAP, ROLE_INFO, RoleAlignmentSchema, RoleTagSchema
 } from '@mafia/engine';
 export type {
 	ActorState, RoleAlignment, RoleName,

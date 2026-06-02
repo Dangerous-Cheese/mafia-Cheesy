@@ -6,7 +6,7 @@
 					<div v-if="eyebrow" class="text-overline mafia-card__eyebrow">
 						{{ eyebrow }}
 					</div>
-					<div v-if="title" class="text-h6 mafia-card__title">
+					<div v-if="title" class="text-h6 mafia-card__title" :style="{ color: titleColor }">
 						{{ title }}
 					</div>
 					<div v-if="subtitle" class="text-caption mafia-card__subtitle">
@@ -31,9 +31,11 @@ withDefaults(
 		eyebrow?: string;
 		subtitle?: string;
 		separated?: boolean;
+		titleColor?: string;
 	}>(),
 	{
 		separated: true,
+		titleColor: 'inherit',
 	},
 );
 </script>

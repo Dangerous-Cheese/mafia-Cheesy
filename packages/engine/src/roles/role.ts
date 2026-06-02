@@ -20,8 +20,8 @@ export type RoleName = (typeof RoleNamesAndPriorityOrder)[number];
 export const RoleNameSchema = z.enum(RoleNamesAndPriorityOrder);
 
 // Alignment
-export const RoleAlignment = ['Town', 'Mafia', 'Neutral'] as const;
-export type RoleAlignment = (typeof RoleAlignment)[number];
+export const RoleAlignment = { Town: 'Town', Mafia: 'Mafia', Neutral: 'Neutral' } as const;
+export type RoleAlignment = (typeof RoleAlignment)[keyof typeof RoleAlignment];
 
 export const RoleAlignmentSchema = z.enum(RoleAlignment);
 

@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import type { ActorContext, ActorState } from './actor';
+import { type ActorContext, type ActorState } from './actor';
 import { Bodyguard } from './bodyguard';
 import { Citizen } from './citizen';
 import { Doctor } from './doctor';
 import { Godfather } from './godfather';
 import { Mafioso } from './mafioso';
-import { RolePoolTagSchema, type RoleName, type RoleSettings, type RoleTag } from './role';
+import { RoleAlignment, RolePoolTagSchema, type RoleName, type RoleSettings, type RoleTag } from './role';
 import { Survivor } from './survivor';
 
 export {
@@ -115,6 +115,15 @@ export const ROLE_TAGS_MAP = RoleRegistry.reduce(
 	{} as Record<RoleName, readonly RoleTag[]>
 );
 
+// Map each role name to its alignment
+export const ROLE_ALIGNMENT_MAP = RoleRegistry.reduce(
+	(acc, RoleClass) => {
+		acc[RoleClass.roleName] = RoleClass.alignment;
+		return acc;
+	},
+	{} as Record<RoleName, RoleAlignment>
+);
+
 // Role Info
 export const ROLE_INFO = RoleRegistry.reduce(
 	(acc, RoleClass) => {
@@ -124,6 +133,7 @@ export const ROLE_INFO = RoleRegistry.reduce(
 			description: RoleClass.description,
 			abilities: RoleClass.abilities,
 			goal: RoleClass.goal,
+			alignment: RoleClass.alignment,
 		};
 		return acc;
 	},
@@ -133,5 +143,14 @@ export const ROLE_INFO = RoleRegistry.reduce(
 		description: string;
 		abilities: string[];
 		goal: string;
-	}>
+		alignment: RoleAlignment;
+	}>,
 );
+
+// Build the human-readable attribute list for a role given its (host-configured)
+// settings. Defaults are applied via the role's settings schema before the role
+// derives its attribute strings.
+export const getRoleAttributes = (
+	name: RoleName,
+	settings: RoleSettings['settings'] = {},
+): string[] => getRoleClass(name).attributes(settings);

@@ -24,6 +24,9 @@ export class Bodyguard extends Town {
 	static override abilities = [
 		'Each night, choose a player to protect. If that player is attacked, you will die instead and take the attacker down with you.',
 	]
+	// static override attributes(_settings: RoleSettings['settings'] = {}): string[] {
+	// 	return ['Prevents protectee role conversion'];
+	// }
 
 	private guarding?: Actor;
 

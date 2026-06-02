@@ -60,7 +60,7 @@ export const DEFAULT_CONFIG: GameConfig = {
 		Godfather: {
 			max: 1,
 			weight: 2,
-			settings: { nightImmune: 2 },
+			settings: { nightImmune: true },
 		},
 		Mafioso: {
 			max: 3,

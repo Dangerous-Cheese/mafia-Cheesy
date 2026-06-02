@@ -11,7 +11,7 @@ import { EngineError } from '../error';
 import { Duration, GameEvent, GameEventGroup } from '../events';
 import type { EngineLogger } from '../logger';
 import type { Rng } from '../utils';
-import { RoleAlignment, RoleAlignmentSchema, RoleAllySchema, RoleNameSchema, RoleTags, type RoleAlly, type RoleName, type RoleTag } from './role';
+import { RoleAlignment, RoleAlignmentSchema, RoleAllySchema, RoleNameSchema, RoleTags, type RoleAlly, type RoleName, type RoleSettings, type RoleTag } from './role';
 
 export type { ActorContext } from '../context';
 
@@ -50,11 +50,20 @@ export class Actor {
 
 	static description: string = '';
 	static abilities: string[] = [];
+	static alignment: RoleAlignment | null = null;
 	static goal: string = '';
+
+	/**
+	 * Human-readable attribute list derived from the role's settings. Subclasses
+	 * override to surface config-dependent traits (e.g. night immunity, vest
+	 * counts). Shared wording lives in `./attributes`.
+	 */
+	static attributes(_settings: RoleSettings['settings'] = {}): string[] {
+		return [];
+	}
 
 	static canTriggerGameOver = true;
 
-	alignment: RoleAlignment | null = null;
 	input: ActorState;
 	alias: string;
 	number?: number | undefined;
@@ -94,6 +103,10 @@ export class Actor {
 
 	get description(): string {
 		return (this.constructor as typeof Actor).description;
+	}
+
+	get alignment(): RoleAlignment | null {
+		return (this.constructor as typeof Actor).alignment;
 	}
 
 	get canTriggerGameOver(): boolean {
@@ -254,10 +267,10 @@ export class Town extends Actor {
 	] as const;
 
 	static override goal = 'Lynch every criminal and evildoer.'
+	static override alignment = RoleAlignment.Town;
 
 	constructor(input: ActorState, context: ActorContext) {
 		super(input, context);
-		this.alignment = 'Town';
 	}
 
 	// TODO: Update this when other factions + neutral_killing roles are added
@@ -298,9 +311,11 @@ export class Mafia extends Actor {
 		RoleTags.MafiaRandom,
 	] as const;
 
+	static override goal = 'Eliminate all threats to Mafia dominance.'
+	static override alignment = RoleAlignment.Mafia;
+
 	constructor(input: ActorState, context: ActorContext) {
 		super(input, context);
-		this.alignment = 'Mafia';
 		this.killReason = DeathReasons.MAFIA_KILL;
 	}
 
@@ -375,10 +390,9 @@ export class Neutral extends Actor {
 	] as const;
 
 	static override canTriggerGameOver = false;
+	static override alignment = RoleAlignment.Neutral;
 	constructor(input: ActorState, context: ActorContext) {
 		super(input, context);
-		this.alignment = 'Neutral';
-
 	}
 }
 

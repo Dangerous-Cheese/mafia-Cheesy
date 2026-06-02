@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { DEFAULT_VESTS } from '../constants';
 import { Actor, Neutral, type ActorContext, type ActorState } from './actor';
+import { vestAttributes } from './attributes';
 import { RoleTags } from './role';
 
 export const SurvivorSettingsSchema = z.object({
-	maxVests: z.number().int().min(0).default(DEFAULT_VESTS),
+	maxVests: z.number().int().min(0).default(2),
 });
 
 export type SurvivorSettings = z.infer<typeof SurvivorSettingsSchema>;
@@ -32,6 +32,11 @@ export class Survivor extends Neutral {
 	static settingsSchema = SurvivorSettingsSchema;
 	static override description = 'Neutral Benign role that wins by surviving to the end of the game.';
 
+	static override attributes(settings: SurvivorSettingsInput = {}): string[] {
+		const parsed = SurvivorSettingsSchema.parse(settings);
+		return vestAttributes(parsed.maxVests);
+	}
+
 	private remainingVests = 0;
 
 	constructor(
@@ -40,7 +45,6 @@ export class Survivor extends Neutral {
 		context: ActorContext,
 	) {
 		super(input, context);
-		this.alignment = 'Neutral';
 		const parsed = SurvivorSettingsSchema.parse(settings);
 		const fromActions = input.roleActions?.remainingVests;
 		this.remainingVests =

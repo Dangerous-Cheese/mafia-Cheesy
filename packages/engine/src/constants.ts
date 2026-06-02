@@ -19,12 +19,6 @@ export const MAX_ACTORS = 15;
 // Role defaults
 // ---------------------------------------------------------------------------
 
-/** Default Citizen vest count. */
-export const DEFAULT_VESTS = 2;
-
-/** Default Godfather night-immunity setting. */
-export const DEFAULT_NIGHT_IMMUNE = 2;
-
 /** Alignment used when an actor's alignment is missing or unknown. */
 export const DEFAULT_ALIGNMENT = 'Town' as const;
 

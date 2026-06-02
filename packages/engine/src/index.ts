@@ -23,8 +23,7 @@ import { createRng } from './utils';
 // ---------------------------------------------------------------------------
 export {
 	BROADCAST_TARGET, DeathReasons, DEFAULT_ALIGNMENT,
-	DEFAULT_NIGHT_IMMUNE,
-	DEFAULT_VESTS, EngineErrorCodes,
+	EngineErrorCodes,
 	EventGroupIds,
 	EventIds,
 	MAX_ACTORS,
@@ -166,7 +165,7 @@ export { EngineLogger } from './logger';
 // Roles
 // ---------------------------------------------------------------------------
 export {
-	FALLBACK_ROLE, instantiateRole, ROLE_INFO, RoleAlignmentSchema, RoleKeySchema, RoleNamesAndPriorityOrder, RoleTagSchema
+	FALLBACK_ROLE, getRoleAttributes, instantiateRole, ROLE_INFO, RoleAlignmentSchema, RoleKeySchema, RoleNamesAndPriorityOrder, RoleTagSchema, ROLE_ALIGNMENT_MAP
 } from './roles';
 export type { RoleAlignment, RoleName, RoleSettings, RoleTag } from './roles';
 

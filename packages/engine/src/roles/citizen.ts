@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { DEFAULT_VESTS } from '../constants';
 import { Town, type Actor, type ActorContext, type ActorState } from './actor';
+import { vestAttributes } from './attributes';
 import { RoleTags } from './role';
 
 export const CitizenSettingsSchema = z.object({
-	maxVests: z.number().int().min(0).default(DEFAULT_VESTS),
+	maxVests: z.number().int().min(0).default(2),
 });
 
 export type CitizenSettings = z.infer<typeof CitizenSettingsSchema>;
@@ -21,6 +21,11 @@ export class Citizen extends Town {
 
 	static settingsSchema = CitizenSettingsSchema;
 	static override description = 'Town role with limited self-protection vests.';
+
+	static override attributes(settings: CitizenSettingsInput = {}): string[] {
+		const parsed = CitizenSettingsSchema.parse(settings);
+		return ['Wins ties', ...vestAttributes(parsed.maxVests)];
+	}
 
 	private remainingVests = 0;
 
