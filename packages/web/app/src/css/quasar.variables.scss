@@ -30,7 +30,10 @@ $negative: #ff4d4d; // mafia-ish red (less neon than pure #ff0000)
 $warning: #f2c94c; // firelight gold
 $info: #56ccf2;
 
+$town: #00ff00;
+
 :root {
+	// Verify if this is the appropriate place for these
 	/* Factions (display tokens) */
 	--town: #00ff00;
 	--mafia: #ff0000;

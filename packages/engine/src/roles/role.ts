@@ -1,23 +1,27 @@
 import { z } from 'zod';
 import { MAX_ACTORS } from '../constants';
 
-
-// Registry (this is where we will determine priority order for role selection, so order matters here)
-export const RoleRegistry = [
+// The order here matters, this is the order that actions will be resolved in (e.g. citizen will vest before mafia shoots, doctor will heal after mafia shoots, etc.)
+export const RoleNamesAndPriorityOrder = [
+	// Town Roles
 	'Citizen',
 	'Bodyguard',
 	'Doctor',
+
+	// Mafia Roles
 	'Godfather',
 	'Mafioso',
-	'Survivor',
-]
-export type RoleName = (typeof RoleRegistry)[number];
 
-export const RoleNameSchema = z.enum(RoleRegistry);
+	// Neutral Roles
+	'Survivor',
+] as const;
+export type RoleName = (typeof RoleNamesAndPriorityOrder)[number];
+
+export const RoleNameSchema = z.enum(RoleNamesAndPriorityOrder);
 
 // Alignment
-export const RoleAlignment = ['Town', 'Mafia', 'Neutral'] as const;
-export type RoleAlignment = (typeof RoleAlignment)[number];
+export const RoleAlignment = { Town: 'Town', Mafia: 'Mafia', Neutral: 'Neutral' } as const;
+export type RoleAlignment = (typeof RoleAlignment)[keyof typeof RoleAlignment];
 
 export const RoleAlignmentSchema = z.enum(RoleAlignment);
 
@@ -50,13 +54,16 @@ export const RoleTags = {
 
 export type RoleTag = (typeof RoleTags)[keyof typeof RoleTags];
 
-export type RoleKey = Lowercase<string>;
-
 // export type RoleTag = RolePoolTag | RoleIdentityTag;
 
 export const ROLE_TAGS = Object.values(RoleTags) as RoleTag[];
 
-export const RoleTagSchema = z.enum(ROLE_TAGS);
+const asNonEmptyTuple = <T extends string>(values: T[]) => values as [T, ...T[]];
+
+// Pool tags only (e.g. "town_random"). Role-key tags and the combined
+// RoleTagSchema live in ./index, where the role registry (the canonical source
+// of role keys) is available without a circular import.
+export const RolePoolTagSchema = z.enum(asNonEmptyTuple(ROLE_TAGS));
 
 // Allies
 export const RoleAllySchema = z.object({
@@ -67,3 +74,12 @@ export const RoleAllySchema = z.object({
 });
 
 export type RoleAlly = z.infer<typeof RoleAllySchema>;
+
+// Role settings
+export const RoleSettingsSchema = z.object({
+	max: z.number().int().min(0),
+	weight: z.number().min(0),
+	settings: z.record(z.string(), z.unknown()).default({}),
+});
+
+export type RoleSettings = z.infer<typeof RoleSettingsSchema>;

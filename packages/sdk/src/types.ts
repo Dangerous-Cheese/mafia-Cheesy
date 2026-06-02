@@ -28,7 +28,6 @@ export {
 	WinnerSummarySchema
 } from '@mafia/core/game/schema';
 export type {
-	ActorState,
 	ClientGameInfo,
 	DeathRecord,
 	GameConfig,
@@ -45,21 +44,12 @@ export type {
 
 // --- Engine types & values (canonical role/tag/alignment surface) ---
 export {
-	ActorAlignmentSchema,
-	ActorStateInputSchema,
 	ActorStateSchema,
 	FALLBACK_ROLE, GameConfigSchema,
-	GameStateSchema, isRoleName,
-	ROLE_LIST,
-	ROLE_NAMES,
-	ROLE_PRIORITY,
-	ROLE_REGISTRY, ROLE_TAGS, ROLE_TAGS_MAP,
-	RoleNameSchema, RoleTagSchema
+	GameStateSchema, getRoleAttributes, ROLE_INFO, ROLE_KEYS, ROLE_NAME_BY_KEY, RoleTags, RoleAlignmentSchema, RoleTagSchema
 } from '@mafia/engine';
 export type {
-	ActorAlignment,
-	ActorStateInput, RoleName,
-	RoleSettings, RoleTag, StateActor,
+	ActorState, RoleAlignment, RoleKey, RoleName, RoleSettings, RoleTag, StateActor, TagLike,
 	StateGraveyardRecord
 } from '@mafia/engine';
 
@@ -95,4 +85,3 @@ export type {
 // --- User schemas & types ---
 export { PresenceSchema, UserErrors, UserInfoSchema } from '@mafia/core/user/schema';
 export type { Presence, UserInfo } from '@mafia/core/user/schema';
-

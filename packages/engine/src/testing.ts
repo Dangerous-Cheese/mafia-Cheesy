@@ -1,5 +1,6 @@
 import { DEFAULT_CONFIG } from './config';
-import type { ActorState, GameConfig } from './types';
+import type { ActorState } from './roles';
+import type { GameConfig } from './types';
 
 /**
  * Shared test/example fixtures. Importable as `@mafia/engine/testing`.

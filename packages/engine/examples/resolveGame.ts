@@ -1,9 +1,9 @@
-import { newGame, resolveGame } from '@mafia/engine';
-import { DEFAULT_SEED, dummyConfig, dummyActors, toActorInput } from '@mafia/engine/testing';
+import { DEFAULT_CONFIG, newGame, resolveGame } from '@mafia/engine';
+import { DEFAULT_SEED, dummyActors, toActorInput } from '@mafia/engine/testing';
 
 const run = () => {
 	const actors = dummyActors(3);
-	const config = dummyConfig();
+	const config = DEFAULT_CONFIG; // Use the full default config to demonstrate tag fallback when there are more tags than actors
 	const created = newGame({ actors, config, options: { seed: DEFAULT_SEED } });
 	const loadedActors = created.actors.map(toActorInput);
 

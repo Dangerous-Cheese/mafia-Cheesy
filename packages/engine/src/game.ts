@@ -1,42 +1,39 @@
-import type { z } from 'zod';
 import { DEFAULT_ALIGNMENT, EngineErrorCodes, EventGroupIds } from './constants';
 import type { EngineContext } from './context';
 import { EngineError } from './error';
 import { GameEventGroup } from './events';
-import { EngineLogger } from './logger';
+import type { EngineLogger } from './logger';
 import {
 	FALLBACK_ROLE,
-	ROLE_PRIORITY,
-	ROLE_TAGS_MAP,
 	instantiateRole,
+	ROLE_KEY_BY_NAME,
+	ROLE_TAGS_MAP,
+	RoleNamesAndPriorityOrder,
 	type RoleName,
 } from './roles';
-import { type Actor } from './roles/actor';
-import {
-	EngineInputSchema,
-	type ActorState,
-	type EngineInput,
-	type EngineResult,
-	type GameConfig,
-	type GameState,
-	type WinnerSummary,
-} from './types';
-import { createRng, toSnakeCase, type Rng } from './utils';
+import { type Actor, type ActorState } from './roles/actor';
+import { type GameConfig, type GameState } from './types';
+import { toSnakeCase, type Rng } from './utils';
 
-const toValidationError = (error: unknown) =>
-	new EngineError(EngineErrorCodes.VALIDATION_ERROR, 'Invalid engine input', error);
+// ---------------------------------------------------------------------------
+// Role generation
+//
+// Roles are not assigned directly. Each game has a list of `tags` (one per
+// seat). For every tag we collect the roles allowed under it, then pick one
+// role per tag using weighted random choice. `max` caps how many of a role can
+// appear; once hit, the role is blacklisted and stripped from all remaining
+// tag option lists. If a tag has no remaining options it "fails" and falls back
+// to FALLBACK_ROLE.
+// ---------------------------------------------------------------------------
 
-const parseWith = <S extends z.ZodTypeAny>(schema: S, value: unknown): z.infer<S> => {
-	try {
-		return schema.parse(value);
-	} catch (err) {
-		throw toValidationError(err);
-	}
-};
-
+// [role, weight, max] — one allowable role under a given tag.
 type RoleOption = readonly [RoleName, number, number];
+// A tag paired with every role currently allowed under it.
 type TagRoleOptions = [string, RoleOption[]];
 
+// Sort so the most-constrained tags resolve first: empty option lists last,
+// then fewest options first. Picking scarce tags early avoids wasting rare
+// roles on tags that had no other choice.
 const compareRoleOptionEntries = (a: TagRoleOptions, b: TagRoleOptions) => {
 	const aEmpty = a[1].length === 0 ? 1 : 0;
 	const bEmpty = b[1].length === 0 ? 1 : 0;
@@ -58,6 +55,7 @@ const generateRoles = (
 	logger.info(`Tags: ${JSON.stringify(config.tags)}`);
 
 	const failedRoles: string[] = [];
+	// Build the per-tag option lists from the configured roles.
 	const roleOptions: TagRoleOptions[] = config.tags.map((tag) => {
 		const possibleRoles: RoleOption[] = [];
 		for (const [roleName, settings] of Object.entries(config.roles) as Array<
@@ -65,7 +63,9 @@ const generateRoles = (
 		>) {
 			if (!settings) continue;
 			const roleTags = ROLE_TAGS_MAP[roleName] ?? [];
-			if (roleTags.includes(tag)) {
+			// A tag matches a role if it's one of the role's pool tags OR the
+			// role's canonical key (e.g. "citizen", "serial_killer").
+			if ((roleTags as readonly string[]).includes(tag) || ROLE_KEY_BY_NAME[roleName] === tag) {
 				possibleRoles.push([roleName, settings.weight, settings.max]);
 			}
 		}
@@ -78,6 +78,8 @@ const generateRoles = (
 	const blacklist = new Set<RoleName>();
 
 	while (roleOptions.length > 0) {
+		// Blacklist any role that has reached its `max`, removing it from every
+		// remaining tag's option list.
 		for (const [roleName, settings] of Object.entries(config.roles) as Array<
 			[RoleName, GameConfig['roles'][RoleName] & {}]
 		>) {
@@ -94,6 +96,7 @@ const generateRoles = (
 
 		roleOptions.sort(compareRoleOptionEntries);
 
+		// Resolve the most-constrained tag (front of the sorted list).
 		const entry = roleOptions[0];
 		if (!entry) {
 			throw new EngineError(
@@ -134,12 +137,25 @@ const generateRoles = (
 	return { roles: selectedRoles, failedRoles };
 };
 
+// ---------------------------------------------------------------------------
+// Game
+//
+// In-memory model of a single game for the duration of one engine call. Holds
+// the live actors, the event tree, and the graveyard. Construct via the static
+// factories: `Game.new` (fresh game + role allocation) or `Game.load` (rebuild
+// from a saved GameState). Mutating methods (`lynch`, `resolve`) advance the
+// game; `state` / `dumpActors` project it back out for persistence.
+// ---------------------------------------------------------------------------
 class Game {
 	public actors: Actor[] = [];
+	// Root event tree for the whole game; action events get nested under it.
 	public events = new GameEventGroup(EventGroupIds.ROOT);
+	// Scratch group reused per-actor while resolving, then cloned into `events`.
 	public actionEvents = new GameEventGroup(EventGroupIds.ACTION);
 	private graveyard: GameState['graveyard'] = [];
 
+	// Instantiate one Actor per input (role required), wiring shared logger /
+	// event sink / rng into each, then precompute allies + legal targets.
 	constructor(
 		public day: number,
 		public actorInputs: ActorState[],
@@ -166,6 +182,8 @@ class Game {
 		this.generateAlliesAndPossibleTargets();
 	}
 
+	// Fresh game: generate a role pool from config, shuffle both actors and
+	// roles, pad with FALLBACK_ROLE if short, then assign seat numbers + roles.
 	static new(actorInputs: ActorState[], config: GameConfig, context: EngineContext) {
 		context.logger.info('--- Creating a new Game ---');
 		context.logger.info(`Actors: ${JSON.stringify(actorInputs)}`);
@@ -195,6 +213,8 @@ class Game {
 		return new Game(1, shuffledActors, config, context);
 	}
 
+	// Rebuild a game from a persisted state: actors already carry their roles,
+	// so just construct, restore the graveyard, and re-apply submitted targets.
 	static load(
 		actorInputs: ActorState[],
 		config: GameConfig,
@@ -216,6 +236,7 @@ class Game {
 		return game;
 	}
 
+	// Translate each actor's submitted target numbers into Actor references.
 	private applyTargetsFromInputs() {
 		for (const actor of this.actors) {
 			const targets = (actor.input.targets ?? [])
@@ -225,6 +246,8 @@ class Game {
 		}
 	}
 
+	// Recompute, for every living actor, who its allies are and which targets
+	// are currently legal. Must rerun whenever the living set changes.
 	private generateAlliesAndPossibleTargets() {
 		for (const actor of this.aliveActors) {
 			actor.findAllies(this.actors);
@@ -240,16 +263,23 @@ class Game {
 		actor.lynched();
 	}
 
+	// Run one night cycle: advance the day, then resolve every actor's action
+	// in role-priority order. Three phases: (1) prep, (2) validate targets,
+	// (3) execute actions and collect their events.
 	resolve() {
 		this.context.logger.info('--- Resolving all actor actions ---');
+		// Phase 1 — prep: advance day, refresh allies/targets, sort by role
+		// priority so e.g. protective roles act before/after killers correctly.
 		this.day += 1;
 		this.generateAlliesAndPossibleTargets();
 		this.actors = [...this.actors].sort(
 			(a, b) =>
-				(ROLE_PRIORITY[a.roleName] ?? Number.POSITIVE_INFINITY) -
-				(ROLE_PRIORITY[b.roleName] ?? Number.POSITIVE_INFINITY),
+				(RoleNamesAndPriorityOrder.indexOf(a.roleName) ?? Number.POSITIVE_INFINITY) -
+				(RoleNamesAndPriorityOrder.indexOf(b.roleName) ?? Number.POSITIVE_INFINITY),
 		);
 
+		// Phase 2 — validate: drop any actor's targets that aren't in its
+		// currently-legal `possibleTargets` (stale/illegal submissions).
 		for (const actor of this.actors) {
 			if (actor.targets.length === 0) continue;
 			if (actor.possibleTargets.length === 0) {
@@ -273,6 +303,9 @@ class Game {
 			}
 		}
 
+		// Phase 3 — execute: each living actor with targets performs its action.
+		// Action events are collected into the scratch group, then (if any) cloned
+		// as a nested group under the root event tree.
 		for (const actor of this.actors) {
 			if (actor.targets.length === 0 || !actor.alive) continue;
 			this.context.logger.info(
@@ -382,6 +415,8 @@ class Game {
 		return this.actors.filter((actor) => !actor.alive);
 	}
 
+	// Persisted graveyard plus actors that died this cycle, projected into
+	// persistable records (cause/day of death, role reveal, will, alignment).
 	get fullGraveyard(): GameState['graveyard'] {
 		return [
 			...this.graveyard,
@@ -397,6 +432,7 @@ class Game {
 		];
 	}
 
+	// Minimal snapshot persisted between calls and reloaded by `Game.load`.
 	get state(): GameState {
 		return {
 			day: this.day,
@@ -413,85 +449,5 @@ class Game {
 		return this.actors.map((actor) => actor.dumpState());
 	}
 }
-
-const buildResult = (game: Game, winners: WinnerSummary[] | null, logger: EngineLogger) => ({
-	state: game.state,
-	actors: game.dumpActors(),
-	events: game.events.dump(),
-	winners,
-	log: logger.output,
-});
-
-const summarizeWinners = (winners: ReturnType<Game['checkForWin']>): WinnerSummary[] | null => {
-	if (!winners || winners.length === 0) return null;
-	return winners.map((winner) => ({
-		id: winner.input.id,
-		name: winner.input.name,
-		alias: winner.alias,
-		number: winner.requireNumber(),
-		role: winner.roleName,
-		alignment: winner.alignment ?? DEFAULT_ALIGNMENT,
-	}));
-};
-
-type Bootstrap = {
-	parsed: EngineInput;
-	context: EngineContext;
-	logger: EngineLogger;
-	actors: ActorState[];
-	config: GameConfig;
-};
-
-/**
- * Validate the engine input once at the boundary and derive all per-call
- * resources. Subsequent code consumes already-parsed values, so no further
- * Zod parsing is required.
- */
-const bootstrap = (input: EngineInput): Bootstrap => {
-	const parsed = parseWith(EngineInputSchema, input);
-	const logger = new EngineLogger();
-	const rng = createRng(parsed.options?.seed);
-	return {
-		parsed,
-		context: { logger, rng },
-		logger,
-		actors: parsed.actors,
-		config: parsed.config,
-	};
-};
-
-const requireState = (input: EngineInput, action: 'load' | 'resolve'): GameState => {
-	if (!input.state) {
-		throw new EngineError(
-			EngineErrorCodes.MISSING_STATE,
-			`State is required to ${action} a game`,
-		);
-	}
-	return input.state;
-};
-
-export const newGame = (input: EngineInput): EngineResult => {
-	const { context, logger, actors, config } = bootstrap(input);
-	const game = Game.new(actors, config, context);
-	const winners = summarizeWinners(game.checkForWin());
-	return buildResult(game, winners, logger);
-};
-
-export const loadGame = (input: EngineInput): EngineResult => {
-	const { parsed, context, logger, actors, config } = bootstrap(input);
-	const state = requireState(parsed, 'load');
-	const game = Game.load(actors, config, state, context);
-	const winners = summarizeWinners(game.checkForWin());
-	return buildResult(game, winners, logger);
-};
-
-export const resolveGame = (input: EngineInput): EngineResult => {
-	const { parsed, context, logger, actors, config } = bootstrap(input);
-	const state = requireState(parsed, 'resolve');
-	const game = Game.load(actors, config, state, context);
-	game.resolve();
-	const winners = summarizeWinners(game.checkForWin());
-	return buildResult(game, winners, logger);
-};
 
 export { Game };

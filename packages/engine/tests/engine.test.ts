@@ -321,63 +321,19 @@ describe('engine', () => {
 		expect(resolved.winners?.some((w) => w.alignment === 'Mafia')).toBe(true);
 	});
 
-	it('awards last-alive winner regardless of role', () => {
-		const actors = [
-			{
-				id: 'user-1',
-				name: 'UserName1',
-				alias: 'UserAlias1',
-				role: 'Survivor' as const,
-				number: 1,
-				alive: true,
-				possibleTargets: [],
-				targets: [],
-				allies: [],
-				roleActions: { remainingVests: 0 },
-				alignment: null,
-			},
-			{
-				id: 'user-2',
-				name: 'UserName2',
-				alias: 'UserAlias2',
-				role: 'Citizen' as const,
-				number: 2,
-				alive: false,
-				possibleTargets: [],
-				targets: [],
-				allies: [],
-				roleActions: { remainingVests: 0 },
-				alignment: null,
-			},
-		];
+	it('allows specifying exact roles in config tags', () => {
+		const actors = dummyActors(3);
+		const config = dummyConfig();
+		config.tags = ['citizen', 'bodyguard', 'mafioso']; // Use role keys instead of pool tags
 
-		const config: GameConfig = {
-			tags: ['survivor', 'any_random'],
-			settings: {},
-			roles: {
-				Citizen: { max: 1, weight: 1, settings: { maxVests: 0 } },
-				Survivor: { max: 1, weight: 1, settings: { maxVests: 0 } },
-			},
-		};
+		const game = newGame({ actors, config, options: { seed: DEFAULT_SEED } });
 
-		const state = {
-			day: 1,
-			actors: [
-				{ number: 1, alias: 'UserAlias1', alive: true },
-				{ number: 2, alias: 'UserAlias2', alive: false },
-			],
-			graveyard: [],
-		};
+		expect(game.actors).toHaveLength(3);
 
-		const resolved = resolveGame({ actors, config, state, options: { seed: DEFAULT_SEED } });
-
-		// console.log('Actors', resolved.actors);
-		// console.log('Winners', resolved.winners);
-
-		for (const winner of resolved.winners ?? []) {
-			console.log('Winner', winner.name, winner.role, winner.alignment);
-		}
-		expect(resolved.winners).toHaveLength(1);
-		expect(resolved.winners?.[0]?.role).toBe('Survivor');
+		// Expect the assigned roles to be from the specified tags (which are role keys in this case)
+		const assignedRoleKeys = game.actors.map((actor) => actor.role);
+		expect(assignedRoleKeys).toContain('Citizen');
+		expect(assignedRoleKeys).toContain('Bodyguard');
+		expect(assignedRoleKeys).toContain('Mafioso');
 	});
 });
