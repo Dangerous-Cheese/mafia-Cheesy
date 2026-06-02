@@ -18,6 +18,11 @@ export class Mafioso extends Mafia {
 	static settingsSchema = MafiosoSettingsSchema;
 	static override description = 'Mafia attacker that carries out faction kills.';
 
+	static override abilities = [
+		'Each night, collude with your mafia family to choose a player to kill.',
+		'You will carry out the kill on behalf of the mafia, and your target will see you as the killer.',
+	]
+
 	constructor(
 		input: ActorState,
 		settings: MafiosoSettingsInput = {},
