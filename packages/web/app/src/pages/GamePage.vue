@@ -1,6 +1,7 @@
 <template>
-	<q-page class="column q-pa-m" padding>
+	<q-page class="column no-wrap" padding style="max-height: 100vh">
 		<!-- Loading / syncing state -->
+		<!-- TODO: This is garbage AI slop at its finest -->
 		<div
 			v-if="!gameStore.isReady"
 			class="column items-center justify-center"
@@ -34,9 +35,12 @@
 				<game-timer :duration="200" />
 			</div>
 
-			<div class="row col q-col-gutter-sm">
-				<div class="col-12 col-sm-6 column q-gutter-y-md">
-					<div class="col row items-start orange">
+			<!-- Main UI Area -->
+			<div class="row col q-col-gutter-sm no-wrap">
+				<!-- Left Half -->
+				<div class="col-12 col-sm-6 column q-col-gutter-y-md no-wrap">
+					<!-- Top Left Quadrant -->
+					<div class="col row items-start">
 						<transition-group
 							tag="div"
 							enter-active-class="animated slideInLeft"
@@ -56,6 +60,7 @@
 						</transition-group>
 					</div>
 
+					<!-- Bottom Left Quadrant -->
 					<div class="col row items-stretch">
 						<transition enter-active-class="animated slideInLeft">
 							<game-chat key="chat" class="col-12 full-height" />
@@ -63,8 +68,10 @@
 					</div>
 				</div>
 
-				<div class="col-12 col-sm-6 column q-gutter-y-md">
-					<div class="col row justify-end items-stretch">
+				<!-- Right Half -->
+				<div class="col-12 col-sm-6 column q-col-gutter-y-md no-wrap">
+					<!-- Top Right Quadrant -->
+					<div class="row justify-end items-stretch">
 						<transition enter-active-class="animated slideInRight">
 							<game-role
 								v-if="gameStore.actor && gameStore.actor.role"
@@ -76,10 +83,11 @@
 						</transition>
 					</div>
 
+					<!-- Bottom Right Quadrant -->
 					<div class="col row justify-end items-stretch">
 						<transition appear enter-active-class="animated slideInRight">
 							<game-actions
-								class="col-12 col-sm-11 col-md-8 col-lg-6 full-height"
+								class="col-12 col-sm-9 col-md-6 col-lg-7 full-height"
 								:phase="gameStore.phase"
 								:alive="gameStore.actor?.alive ?? false"
 								:has-targets="hasTargets"

@@ -1,5 +1,5 @@
 <template>
-	<MCard class="column full-height">
+	<MCard class="column">
 		<MCardHeader
 			:title="meta?.name ?? 'Unknown Role'"
 			:subtitle="meta?.description"

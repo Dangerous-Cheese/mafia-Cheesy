@@ -1,23 +1,28 @@
 <template>
-	<MCard>
-		<MCardHeader title="Actions" :separated="false" />
-		<MCardContent>
-			<div class="text-body1 q-mb-sm">
-				{{ phaseLabel }}
-			</div>
+	<MCard class="column">
+		<MCardContent class="col column" style="min-height: 0">
+			<q-list dense class="q-pa-none q-ma-none col column no-wrap" style="min-height: 0">
+				<q-item
+					v-for="i in 15"
+					:key="i"
+					class="col items-center"
+					style="min-height: 0"
+					:class="i % 2 === 0 ? 'bg-green' : 'bg-orange'"
+				>
+					<q-item-section>
+						<q-item-label>{{ phaseLabel }} {{ i }}</q-item-label>
+					</q-item-section>
+				</q-item>
+			</q-list>
 		</MCardContent>
-		<MCardActions>
-			<q-btn size="sm" color="primary" label="Vote" no-caps :disable="!canVote" />
-			<q-btn size="sm" color="secondary" label="Ability" no-caps :disable="!canUseAbility" />
-			<q-btn size="sm" color="grey-8" label="Skip" no-caps :disable="!canAct" />
-		</MCardActions>
 	</MCard>
 </template>
 
 <script setup lang="ts">
 import type { GamePhase } from '@mafia/sdk';
+import MCard from 'src/components/ui/Card/MCard.vue';
+import MCardContent from 'src/components/ui/Card/MCardContent.vue';
 import { computed } from 'vue';
-import { MCard, MCardActions, MCardContent, MCardHeader } from 'src/components/ui/Card';
 
 const DAY_PHASES: GamePhase[] = ['day', 'poll', 'defense', 'trial'];
 const NIGHT_PHASES: GamePhase[] = ['night'];
@@ -44,11 +49,9 @@ const phaseLabel = computed(() => {
 	return `Phase: ${props.phase}`;
 });
 
-const canAct = computed(() => props.alive && !!props.phase && props.phase !== 'pregame');
+// const canAct = computed(() => props.alive && !!props.phase && props.phase !== 'pregame');
 
-const canVote = computed(
-	() => canAct.value && !!props.phase && DAY_PHASES.includes(props.phase),
-);
+// const canVote = computed(() => canAct.value && !!props.phase && DAY_PHASES.includes(props.phase));
 
-const canUseAbility = computed(() => canAct.value && props.hasTargets);
+// const canUseAbility = computed(() => canAct.value && props.hasTargets);
 </script>

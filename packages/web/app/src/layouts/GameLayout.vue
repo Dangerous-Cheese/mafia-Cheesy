@@ -3,6 +3,7 @@
 		<BackgroundSplash />
 		<q-page-container>
 			<router-view />
+
 			<AdminFab v-if="actor?.isAdmin" />
 		</q-page-container>
 	</q-layout>
