@@ -86,12 +86,7 @@
 					<!-- Bottom Right Quadrant -->
 					<div class="col row justify-end items-stretch">
 						<transition appear enter-active-class="animated slideInRight">
-							<game-actions
-								class="col-12 col-sm-9 col-md-6 col-lg-7 full-height"
-								:phase="gameStore.phase"
-								:alive="gameStore.actor?.alive ?? false"
-								:has-targets="hasTargets"
-							/>
+							<game-actions class="col-12 col-sm-9 col-md-6 col-lg-7 full-height" />
 						</transition>
 					</div>
 				</div>
