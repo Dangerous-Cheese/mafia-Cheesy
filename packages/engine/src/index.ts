@@ -165,9 +165,9 @@ export { EngineLogger } from './logger';
 // Roles
 // ---------------------------------------------------------------------------
 export {
-	FALLBACK_ROLE, getRoleAttributes, instantiateRole, ROLE_INFO, RoleAlignmentSchema, RoleKeySchema, RoleNamesAndPriorityOrder, RoleTagSchema, ROLE_ALIGNMENT_MAP
+	FALLBACK_ROLE, getRoleAttributes, instantiateRole, ROLE_INFO, ROLE_KEYS, ROLE_NAME_BY_KEY, RoleAlignmentSchema, RoleKeySchema, RoleNamesAndPriorityOrder, RoleTags, RoleTagSchema
 } from './roles';
-export type { RoleAlignment, RoleName, RoleSettings, RoleTag } from './roles';
+export type { RoleAlignment, RoleKey, RoleName, RoleSettings, RoleTag, TagLike } from './roles';
 
 
 export { Actor, Mafia, Town } from './roles/actor';
@@ -219,6 +219,5 @@ export type {
 
 export { ActorStateSchema } from './roles/actor';
 export type { ActorState } from './roles/actor';
-
 
 

@@ -1,4 +1,4 @@
-import { ROLE_ALIGNMENT_MAP, type RoleAlignment, type RoleName } from "@mafia/sdk";
+import { ROLE_INFO, type RoleAlignment, type RoleName, type TagLike } from "@mafia/sdk";
 
 export const colorForAlignment = (alignment: RoleAlignment) => {
 	switch (alignment) {
@@ -17,7 +17,7 @@ export const colorForAlignment = (alignment: RoleAlignment) => {
 
 
 export const colorForRole = (roleName: RoleName) => {
-	const alignment = ROLE_ALIGNMENT_MAP[roleName];
+	const alignment = ROLE_INFO[roleName].alignment;
 	if (alignment !== "Neutral") {
 		return colorForAlignment(alignment);
 	}
@@ -31,3 +31,15 @@ export const colorForRole = (roleName: RoleName) => {
 	}
 	return colorForAlignment(alignment);
 };
+
+export const colorForTag = (tag: TagLike) => {
+	if (tag.includes('town')) {
+		return colorForAlignment('Town');
+	} else if (tag.includes('mafia')) {
+		return colorForAlignment('Mafia');
+	} else if (tag.includes('neutral')) {
+		return colorForAlignment('Neutral');
+	} else {
+		return '#00bfff';
+	}
+}

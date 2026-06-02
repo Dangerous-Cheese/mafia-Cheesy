@@ -5,11 +5,12 @@ import { Citizen } from './citizen';
 import { Doctor } from './doctor';
 import { Godfather } from './godfather';
 import { Mafioso } from './mafioso';
-import { RoleAlignment, RolePoolTagSchema, type RoleName, type RoleSettings, type RoleTag } from './role';
+import { RolePoolTagSchema } from './role';
+import { type RoleAlignment, type RoleName, type RoleSettings, type RoleTag } from './role';
 import { Survivor } from './survivor';
 
 export {
-	ROLE_TAGS, RoleAlignment,
+	RoleAlignment,
 	RoleAlignmentSchema,
 	RoleNamesAndPriorityOrder,
 	RoleNameSchema,
@@ -44,9 +45,13 @@ export type RoleInstance = InstanceType<RoleClass>;
 // "citizen", "serial_killer"). Derived from the registry, not from role names.
 export type RoleKey = RoleClass['roleKey'];
 
+export type TagLike = RoleTag | RoleKey;
+
 const asNonEmptyTuple = <T extends string>(values: T[]) => values as [T, ...T[]];
 
-// Every role's declared key, e.g. ["citizen", "bodyguard", ...].
+// Every roles's declared name, e.g. ["Citizen", "Serial Killer", ...].
+export const ROLE_NAMES = RoleRegistry.map((RoleClass) => RoleClass.roleName);
+// Every role's declared key, e.g. ["citizen", "serial_killer", ...].
 export const ROLE_KEYS = RoleRegistry.map((RoleClass) => RoleClass.roleKey);
 
 // role name -> role key lookup (canonical, from class metadata).
@@ -56,6 +61,14 @@ export const ROLE_KEY_BY_NAME = RoleRegistry.reduce(
 		return acc;
 	},
 	{} as Record<RoleName, RoleKey>,
+);
+
+export const ROLE_NAME_BY_KEY = RoleRegistry.reduce(
+	(acc, RoleClass) => {
+		acc[RoleClass.roleKey] = RoleClass.roleName;
+		return acc;
+	},
+	{} as Record<RoleKey, RoleName>,
 );
 
 export const RoleKeySchema = z.enum(asNonEmptyTuple(ROLE_KEYS));
@@ -115,15 +128,6 @@ export const ROLE_TAGS_MAP = RoleRegistry.reduce(
 	{} as Record<RoleName, readonly RoleTag[]>
 );
 
-// Map each role name to its alignment
-export const ROLE_ALIGNMENT_MAP = RoleRegistry.reduce(
-	(acc, RoleClass) => {
-		acc[RoleClass.roleName] = RoleClass.alignment;
-		return acc;
-	},
-	{} as Record<RoleName, RoleAlignment>
-);
-
 // Role Info
 export const ROLE_INFO = RoleRegistry.reduce(
 	(acc, RoleClass) => {
@@ -134,6 +138,7 @@ export const ROLE_INFO = RoleRegistry.reduce(
 			abilities: RoleClass.abilities,
 			goal: RoleClass.goal,
 			alignment: RoleClass.alignment,
+			key: RoleClass.roleKey,
 		};
 		return acc;
 	},
@@ -144,6 +149,7 @@ export const ROLE_INFO = RoleRegistry.reduce(
 		abilities: string[];
 		goal: string;
 		alignment: RoleAlignment;
+		key: RoleKey;
 	}>,
 );
 

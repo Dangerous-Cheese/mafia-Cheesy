@@ -41,16 +41,21 @@
 					</div>
 				</div>
 
+				<q-space />
+
 				<div v-if="meta.tags.length" class="col-grow column justify-end">
+					<q-separator v-if="meta.tags.length" dark class="q-my-sm" />
 					<div class="row q-gutter-xs q-mt-sm">
 						<QChip
 							v-for="tag in meta.tags"
 							:key="tag"
 							dense
-							color="grey-8"
+							outline
 							text-color="white"
-							:label="tag"
-						/>
+							:style="{ borderColor: colorForTag(tag) }"
+						>
+							<GameRoleTag :tag="tag" />
+						</QChip>
 					</div>
 				</div>
 			</template>
@@ -62,8 +67,9 @@
 import { getRoleAttributes, ROLE_INFO, type RoleName, type RoleSettings } from '@mafia/sdk';
 import { QChip } from 'quasar';
 import { MCard, MCardContent, MCardHeader } from 'src/components/ui/Card';
-import { colorForRole } from 'src/util/colors';
+import { colorForRole, colorForTag } from 'src/util/colors';
 import { computed } from 'vue';
+import GameRoleTag from './GameRoleTag.vue';
 
 const props = withDefaults(
 	defineProps<{

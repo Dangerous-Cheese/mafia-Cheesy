@@ -46,11 +46,10 @@ export type {
 export {
 	ActorStateSchema,
 	FALLBACK_ROLE, GameConfigSchema,
-	GameStateSchema, getRoleAttributes, ROLE_ALIGNMENT_MAP, ROLE_INFO, RoleAlignmentSchema, RoleTagSchema
+	GameStateSchema, getRoleAttributes, ROLE_INFO, ROLE_KEYS, ROLE_NAME_BY_KEY, RoleTags, RoleAlignmentSchema, RoleTagSchema
 } from '@mafia/engine';
 export type {
-	ActorState, RoleAlignment, RoleName,
-	RoleSettings, RoleTag, StateActor,
+	ActorState, RoleAlignment, RoleKey, RoleName, RoleSettings, RoleTag, StateActor, TagLike,
 	StateGraveyardRecord
 } from '@mafia/engine';
 
@@ -86,4 +85,3 @@ export type {
 // --- User schemas & types ---
 export { PresenceSchema, UserErrors, UserInfoSchema } from '@mafia/core/user/schema';
 export type { Presence, UserInfo } from '@mafia/core/user/schema';
-
