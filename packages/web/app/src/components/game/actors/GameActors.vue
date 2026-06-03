@@ -6,12 +6,14 @@
 				class="col column no-wrap justify-evenly"
 				style="min-height: 0; padding-left: 0px !important"
 			>
-				<GameActionsItem
+				<GameActor
 					v-for="i in 15"
 					:key="i"
 					style="min-height: 0"
 					:number="i"
 					:actor="actorForNumber(i)"
+					:isPlayer="gameStore.actor?.number === i"
+					:isAlly="gameStore.actor?.allies.map((a) => a.number).includes(i)"
 				/>
 			</q-list>
 		</MCardContent>
@@ -22,9 +24,7 @@
 import MCard from 'src/components/ui/Card/MCard.vue';
 import MCardContent from 'src/components/ui/Card/MCardContent.vue';
 import { useGameStore } from 'src/stores/game.js';
-import GameActionsItem from './GameActionsItem.vue';
-
-const props = withDefaults(defineProps<{}>(), {});
+import GameActor from './GameActor.vue';
 
 const gameStore = useGameStore();
 

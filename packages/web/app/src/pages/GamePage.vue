@@ -86,7 +86,7 @@
 					<!-- Bottom Right Quadrant -->
 					<div class="col row justify-end items-stretch">
 						<transition appear enter-active-class="animated slideInRight">
-							<game-actions class="col-12 col-sm-9 col-md-6 col-lg-7 full-height" />
+							<game-actors class="col-12 col-sm-9 col-md-6 col-lg-7 full-height" />
 						</transition>
 					</div>
 				</div>
@@ -114,7 +114,7 @@
 <script setup lang="ts">
 import type { StateGraveyardRecord } from '@mafia/sdk';
 import GameTimer from 'src/components/game/GameTimer.vue';
-import GameActions from 'src/components/game/actions/GameActions.vue';
+import GameActors from 'src/components/game/actors/GameActors.vue';
 import GameChat from 'src/components/game/chat/GameChat.vue';
 import GameGraveyard from 'src/components/game/graveyard/GameGraveyard.vue';
 import GameJury from 'src/components/game/jury/GameJury.vue';
@@ -157,12 +157,5 @@ const trialPlayerLabel = computed(() => {
 	const p = playerOnTrial.value;
 	if (!p) return 'Unknown';
 	return 'Unknown';
-});
-
-/** Whether the actor has any possible targets this phase */
-const hasTargets = computed(() => {
-	const actor = gameStore.actor;
-	if (!actor) return false;
-	return actor.possibleTargets.some((targets) => targets.length > 0);
 });
 </script>
