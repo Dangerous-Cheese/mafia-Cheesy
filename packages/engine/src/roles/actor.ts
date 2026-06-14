@@ -73,7 +73,10 @@ export class Actor {
 	visitors: Actor[] = [];
 	bodyguards: BodyguardActor[] = [];
 	doctors: DoctorActor[] = [];
-	nightImmune = false;
+  nightImmune = false;
+  detectionImmune = false;
+  RoleblockImmune = false;
+  roleblocked = false;
 	visiting: Actor | null = null;
 	killReason: string = DeathReasons.UNKNOWN_LONG;
 	targets: Actor[] = [];
@@ -395,4 +398,3 @@ export class Neutral extends Actor {
 		super(input, context);
 	}
 }
-
